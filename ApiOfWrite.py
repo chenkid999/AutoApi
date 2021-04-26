@@ -18,7 +18,7 @@ if account == {'client_id':[],'client_secret':[],'ms_token':[]}:
     sys.exit()  
 redirect_uri=os.getenv('REDIRECT_URI')
 if redirect_uri =='':
-    redirect_uri = r'https://login.microsoftonline.com/common/oauth2/nativeclient'
+    redirect_uri = r'http://localhost:53682/'
 app_count=len(account['client_id'])
 access_token_list=['wangziyingwen']*app_count
 log_list=['']*app_count
