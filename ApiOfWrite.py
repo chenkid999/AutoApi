@@ -18,7 +18,7 @@ if account == {'client_id':[],'client_secret':[],'ms_token':[]}:
     sys.exit()  
 redirect_uri=os.getenv('REDIRECT_URI')
 if redirect_uri =='':
-    redirect_uri = r'http://localhost:53682/'
+    redirect_uri = r'https://login.microsoftonline.com/common/oauth2/nativeclient'
 app_count=len(account['client_id'])
 access_token_list=['wangziyingwen']*app_count
 log_list=['']*app_count
@@ -324,4 +324,8 @@ if other_config['tg_bot'] != []:
             content=content+'账号 '+str(i)+' 失败 api：'+log_list[i]+'\n'
         else:
             content=content+'账号 '+str(i)+' 所有 api : OK'+'\n'
+<<<<<<< HEAD
     sendTgBot(content)
+=======
+    sendTgBot(content)
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
