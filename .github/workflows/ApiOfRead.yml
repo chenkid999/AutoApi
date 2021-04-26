@@ -2,6 +2,7 @@
 name: Run Api.Read
 
 on: 
+  workflow_dispatch: # 手动触发
   release:
     types: [published]
   push:
