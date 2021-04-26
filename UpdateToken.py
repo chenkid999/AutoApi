@@ -32,7 +32,7 @@ if account_add != ['']:
 #自定义url?
 redirect_uri=os.getenv('REDIRECT_URI')
 if redirect_uri =='':
-    redirect_uri = r'http://localhost:53682/'  
+    redirect_uri = r'https://login.microsoftonline.com/common/oauth2/nativeclient'  
 #其他配置生成   
 other_config=os.getenv('OTHER_CONFIG')
 if os.getenv('OTHER_CONFIG') =='':
@@ -55,6 +55,7 @@ if os.getenv('TG_BOT') == ' ':
     print('删除TG推送')
 gh_url=r'https://api.github.com/repos/'+gh_repo+r'/actions/secrets/'
 key_id='wangziyingwen'
+<<<<<<< HEAD
 print('<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>')
 #微软refresh_token获取
 def getmstoken(appnum):
@@ -62,11 +63,39 @@ def getmstoken(appnum):
     ms_headers={
                'Content-Type':'application/x-www-form-urlencoded'
                }
+=======
+
+#公钥获取
+def getpublickey(Auth,geturl):
+    headers={
+            'Accept': 'application/vnd.github.v3+json','Authorization': Auth
+            }
+    for retry_ in range(4):
+        html = req.get(geturl,headers=headers)
+        if html.status_code < 300:
+            print("公钥获取成功")
+            break
+        else:
+            if retry_ == 3:
+                print("公钥获取失败，请检查secret里 GH_TOKEN 格式与设置是否正确")
+    jsontxt = json.loads(html.text)
+    public_key = jsontxt['key']
+    global key_id 
+    key_id = jsontxt['key_id']
+    return public_key
+
+#微软refresh_token获取
+def getmstoken(ms_token,appnum):
+    headers={
+            'Content-Type':'application/x-www-form-urlencoded'
+            }
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
     data={
          'grant_type': 'refresh_token',
          'refresh_token': ms_token,
          'client_id':client_id,
          'client_secret':client_secret,
+<<<<<<< HEAD
          'redirect_uri':redirect_uri,
          }
     for retry_ in range(4):
@@ -78,6 +107,19 @@ def getmstoken(appnum):
         else:
             if retry_ == 3:
                 print(r'账号/应用 '+str(appnum+1)+' 的微软密钥获取失败'+'\n'+'请检查secret里 account_ID , account_SECRET , MS_TOKEN 格式与内容是否正确，然后重新设置')
+=======
+         'redirect_uri':'http://localhost:53682/'
+         }
+    for retry_ in range(4):
+        html = req.post('https://login.microsoftonline.com/common/oauth2/v2.0/token',data=data,headers=headers)
+        #json.dumps失败
+        if html.status_code < 300:
+            print(r'账号/应用 '+str(appnum)+' 的微软密钥获取成功')
+            break
+        else:
+            if retry_ == 3:
+                print(r'账号/应用 '+str(appnum)+' 的微软密钥获取失败'+'\n'+'请检查secret里 CLIENT_ID , CLIENT_SECRET , MS_TOKEN 格式与内容是否正确，然后重新设置')
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
     jsontxt = json.loads(html.text)
     refresh_token = jsontxt['refresh_token']
     return refresh_token
@@ -109,11 +151,20 @@ def createsecret(secret_value,public_key):
     return b64encode(encrypted).decode("utf-8")
 
 #token上传
+<<<<<<< HEAD
 def setsecret(url_name,encrypted_value):
+=======
+def setsecret(encrypted_value,key_id,puturl,appnum):
+    headers={
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': Auth
+            }
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
     data={
          'encrypted_value': encrypted_value,
          'key_id': key_id
          }
+<<<<<<< HEAD
     for retry_ in range(4):
         putstatus=req.put(gh_url+url_name,headers=gh_headers,data=json.dumps(data))
         if putstatus.status_code < 300:
@@ -131,6 +182,19 @@ def deletesecret(url_name):
             print('--')
             break
  
+=======
+    #data_str=r'{"encrypted_value":"'+encrypted_value+r'",'+r'"key_id":"'+key_id+r'"}'
+    for retry_ in range(4):
+        putstatus=req.put(puturl,headers=headers,data=json.dumps(data))
+        if putstatus.status_code < 300:
+            print(r'账号/应用 '+str(appnum)+' 的微软密钥上传成功')
+            break
+        else:
+            if retry_ == 3:
+                print(r'账号/应用 '+str(appnum)+' 的微软密钥上传失败，请检查secret里 GH_TOKEN 格式与设置是否正确')        
+    return putstatus
+    
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
 #调用 
 gh_public_key=getpublickey('public-key')
 for a in range(0,len(account['client_id'])):
