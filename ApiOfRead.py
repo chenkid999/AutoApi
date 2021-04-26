@@ -17,7 +17,7 @@ if account == {'client_id':[],'client_secret':[],'ms_token':[]}:
     sys.exit()  
 redirect_uri=os.getenv('REDIRECT_URI')
 if redirect_uri =='':
-    redirect_uri = r'http://localhost:53682/'
+    redirect_uri = r'https://login.microsoftonline.com/common/oauth2/nativeclient'
 app_count=len(account['client_id'])
 access_token_list=['wangziyingwen']*app_count
 log_list=[0]*app_count
@@ -74,6 +74,7 @@ def getmstoken(appnum):
     headers={
             'Content-Type':'application/x-www-form-urlencoded'
             }
+<<<<<<< HEAD
     data={
          'grant_type': 'refresh_token',
          'refresh_token': ms_token,
@@ -93,6 +94,26 @@ def getmstoken(appnum):
                     sendTgBot('AutoApi简报：'+'\n'+r'账号 '+str(appnum+1)+' token获取失败，运行中断')
     jsontxt = json.loads(html.text)
     return jsontxt['access_token']
+=======
+    data={'grant_type': 'refresh_token',
+        'refresh_token': ms_token,
+        'client_id':client_id,
+        'client_secret':client_secret,
+        'redirect_uri':'http://localhost:53682/'
+        }
+    for retry_ in range(4):
+        html = req.post('https://login.microsoftonline.com/common/oauth2/v2.0/token',data=data,headers=headers)
+        if html.status_code < 300:
+            print(r'账号/应用 '+str(appnum)+' 的微软密钥获取成功')
+            break
+        else:
+            if retry_ == 3:
+                print(r'账号/应用 '+str(appnum)+' 的微软密钥获取失败\n'+'请检查secret里 CLIENT_ID , CLIENT_SECRET , MS_TOKEN 格式与内容是否正确，然后重新设置')
+    jsontxt = json.loads(html.text)
+    refresh_token = jsontxt['refresh_token']
+    access_token = jsontxt['access_token']
+    return access_token
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
     
 #延时
 def timeDelay(xdelay):
@@ -100,9 +121,16 @@ def timeDelay(xdelay):
         time.sleep(random.randint(config[xdelay][1],config[xdelay][2]))
 
 #调用函数
+<<<<<<< HEAD
 def runapi(a):
     timeDelay('api_delay')
     access_token=access_token_list[a]
+=======
+def runapi(apilist,a):
+    timeDelay('api_delay')
+    localtime = time.asctime( time.localtime(time.time()) )
+    access_token=access_token_list[a-1]
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
     headers={
             'Authorization': 'bearer ' + access_token,
             'Content-Type': 'application/json'
@@ -116,6 +144,7 @@ def runapi(a):
                 break
             else:
                 if retry_ == 3:
+<<<<<<< HEAD
                     log_list[a]=log_list[a]+1
                     print('    pass')
                     
@@ -137,6 +166,9 @@ def sendTgBot(content):
             if retry_ == 3:
                 print('tg推送失败')
     print('')
+=======
+                    print('    pass')
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
 
 #一次性获取access_token，降低获取率
 for a in range(0, app_count):
@@ -158,6 +190,7 @@ final_list=fixed_api
 if app_count > 1:
     print('多账户/应用模式下，日志报告里可能会出现一堆***，属于正常情况')
 print("如果api数量少于规定值，则是api赋权没有弄好，或者是onedrive还没有初始化成功。前者请重新赋权，后者请稍等几天")
+<<<<<<< HEAD
 print('共 '+str(app_count)+r' 账号/应用，'+r'每个账号/应用 '+str(config['rounds'])+' 轮') 
 for r in range(1,config['rounds']+1):
     timeDelay('rounds_delay')
@@ -167,6 +200,16 @@ for r in range(1,config['rounds']+1):
         client_secret=account['client_secret'][a]
         ms_token=account['ms_token'][a]
         print('\n'+'应用/账号 '+str(a+1)+' 的第'+str(r)+'轮 '+time.asctime(time.localtime(time.time()))+'\n')
+=======
+print('共 '+str(app_num)+r' 账号/应用，'+r'每个账号/应用 '+str(config['rounds'])+' 轮') 
+for r in range(1,config['rounds']+1):
+    timeDelay('rounds_delay')
+    for a in range(1, int(app_num)+1):
+        timeDelay('app_delay')
+        client_id=os.getenv('CLIENT_ID_'+str(a))
+        client_secret=os.getenv('CLIENT_SECRET_'+str(a))
+        print('\n'+'应用/账号 '+str(a)+' 的第'+str(r)+'轮 '+time.asctime(time.localtime(time.time()))+'\n')
+>>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
         if config['api_rand'] == 1:
             print("已开启随机顺序,共十二个api,自己数")
             apilist=final_list
