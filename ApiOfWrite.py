@@ -3,7 +3,6 @@ import os
 import xlsxwriter
 import requests as req
 import json,sys,random
-
 if os.getenv('ACCOUNT')== '' or os.getenv('OTHER_CONFIG') == '':
     print("<<<<<<<<<<<<<配置初始化中>>>>>>>>>>>>>")
     sys.exit()
@@ -38,7 +37,6 @@ config = {
          'api_delay': [0,0,5],
          'app_delay': [0,0,5],
          }
-
 #微软refresh_token获取
 def getmstoken(appnum):
     #try:except?
@@ -64,7 +62,6 @@ def getmstoken(appnum):
                     sendTgBot('AutoApi简报：'+'\n'+r'账号 '+str(appnum+1)+' token获取失败，运行中断')    
     jsontxt = json.loads(html.text)       
     return jsontxt['access_token']
-
 #延时
 def timeDelay(xdelay):
     if config[xdelay][0] == 1:
@@ -95,15 +92,14 @@ def apiReq(method,a,url,data='QAQ'):
                 print('        操作失败')
     return posttext     
           
-
 #上传文件到onedrive(小于4M)
 def uploadFile(a,filesname,f):
     url=r'https://graph.microsoft.com/v1.0/me/drive/root:/AutoApi/App'+str(a)+r'/'+filesname+r':/content'
     if apiReq('put',a,url,f).status_code >= 300 :
         if sys._getframe().f_code.co_name not in log_list[a]:
             log_list[a]=log_list[a]+sys._getframe().f_code.co_name+','
-    
-        
+
+
 # 发送邮件到自定义邮箱
 def sendEmail(a,subject,content):
     url=r'https://graph.microsoft.com/v1.0/me/sendMail'
@@ -118,8 +114,8 @@ def sendEmail(a,subject,content):
     if apiReq('post',a,url,json.dumps(mailmessage)).status_code >= 300 :
         if sys._getframe().f_code.co_name not in log_list[a]:
             log_list[a]=log_list[a]+sys._getframe().f_code.co_name+','
-    	
-	
+
+
 #修改excel(这函数分离好像意义不大)
 #api-获取itemid: https://graph.microsoft.com/v1.0/me/drive/root/search(q='.xlsx')?select=name,id,webUrl
 def excelWrite(a,filesname,sheet):
@@ -152,7 +148,7 @@ def excelWrite(a,filesname,sheet):
         if sys._getframe().f_code.co_name not in log_list[a]:
             log_list[a]=log_list[a]+sys._getframe().f_code.co_name+','
         return 
-    
+
 def taskWrite(a,taskname):
     try:
         print("    创建任务列表")
@@ -178,7 +174,7 @@ def taskWrite(a,taskname):
         if sys._getframe().f_code.co_name not in log_list[a]:
             log_list[a]=log_list[a]+sys._getframe().f_code.co_name+','
         return 
-    
+
 def teamWrite(a,channelname):
     #新建team
     try:
@@ -216,7 +212,7 @@ def teamWrite(a,channelname):
         if sys._getframe().f_code.co_name not in log_list[a]:
             log_list[a]=log_list[a]+sys._getframe().f_code.co_name+','
         return 
-        
+
 def onenoteWrite(a,notename):
     try:
         print('    创建笔记本')
@@ -239,7 +235,7 @@ def onenoteWrite(a,notename):
         if sys._getframe().f_code.co_name not in log_list[a]:
             log_list[a]=log_list[a]+sys._getframe().f_code.co_name+','
         return
-        
+
 def sendTgBot(content):
     headers={
             'Content-Type': 'application/json'
@@ -258,7 +254,6 @@ def sendTgBot(content):
             if retry_ == 3:
                 print('tg推送失败')
     print('')
-
 #一次性获取access_token，降低获取率
 for a in range(0, app_count):
     client_id=account['client_id'][a]
@@ -273,7 +268,6 @@ else:
     city=other_config['email'][1]
 headers={'Accept-Language': 'zh-CN'}
 weather=req.get(r'http://wttr.in/'+city+r'?format=4&?m',headers=headers).text
-
 #实际运行
 for a in range(0, app_count):
     print('账号 '+str(a+1))
@@ -324,8 +318,4 @@ if other_config['tg_bot'] != []:
             content=content+'账号 '+str(i)+' 失败 api：'+log_list[i]+'\n'
         else:
             content=content+'账号 '+str(i)+' 所有 api : OK'+'\n'
-<<<<<<< HEAD
     sendTgBot(content)
-=======
-    sendTgBot(content)
->>>>>>> 29398e689cd27bc73cb452deee00965e5165734e
